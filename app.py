@@ -1,10 +1,28 @@
-from flask import Flask, request, render_template
-
-app=Flask(__name__)
-
 from flask import Flask, render_template, request
 
 app = Flask(__name__)
+
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    error = None
+    tension_fijacion = ""
+    longitud_estiramiento = ""
+
+    if request.method == 'POST':
+        try:
+            profundidad_ancla = float(request.form['profundidad_ancla'])
+            nivel_dinamico = float(request.form['nivel_dinamico'])
+            nivel_fijacion = float(request.form['nivel_fijacion'])
+            temp_fluido = float(request.form['temp_fluido'])
+            gradiente_fluido = float(request.form['gradiente_fluido'])
+
+            tension_fijacion, longitud_estiramiento = calcular_tension_y_estiramiento(
+                profundidad_ancla, nivel_dinamico, nivel_fijacion, temp_fluido, gradiente_fluido)
+
+        except ValueError as e:
+            error = str(e)
+
+    return render_template('index.html', tension_fijacion=tension_fijacion, longitud_estiramiento=longitud_estiramiento, error=error)
 
 def calcular_tension_y_estiramiento(profundidad_ancla, nivel_dinamico, nivel_fijacion, temp_fluido, gradiente_fluido):
     # Constantes
@@ -33,29 +51,7 @@ def calcular_tension_y_estiramiento(profundidad_ancla, nivel_dinamico, nivel_fij
     tension_fijacion = F1 + F2 - F3
     longitud_estiramiento = (tension_fijacion * profundidad_ancla_pies) / (modulo_young * area_tubing)
 
-    return F2, tension_fijacion, longitud_estiramiento
-
-@app.route('/')
-def index():
-    return render_template('index.html')
-
-@app.route('/calcular', methods=['POST'])
-def calcular():
-    try:
-        profundidad_ancla = float(request.form['profundidad_ancla'])
-        nivel_dinamico = float(request.form['nivel_dinamico'])
-        nivel_fijacion = float(request.form['nivel_fijacion'])
-        temp_fluido = float(request.form['temp_fluido'])
-        gradiente_fluido = float(request.form['gradiente_fluido'])
-
-        F2, tension_fijacion, longitud_estiramiento = calcular_tension_y_estiramiento(
-            profundidad_ancla, nivel_dinamico, nivel_fijacion, temp_fluido, gradiente_fluido)
-
-        return render_template('index.html', 
-                               tension_fijacion=tension_fijacion,
-                               longitud_estiramiento=longitud_estiramiento)
-    except ValueError:
-        return render_template('index.html', error="Por favor, ingrese valores válidos.")
+    return tension_fijacion, longitud_estiramiento
 
 if __name__ == '__main__':
     app.run(debug=True)
