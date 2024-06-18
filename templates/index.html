@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cálculo Tensión de Ancla / Estiramiento tbg</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Cálculo Tensión de Ancla / Estiramiento tbg</h1>
+        <form action="/calcular" method="post">
+            <fieldset>
+                <legend>Input</legend>
+                <label for="diametro_tubing">Diámetro del Tubing: 2 7/8"</label><br><br>
+                <label for="profundidad_ancla">Profundidad de Ancla (mts):</label>
+                <input type="text" id="profundidad_ancla" name="profundidad_ancla" required>
+                <br>
+                <label for="nivel_dinamico">Nivel Dinámico (mts):</label>
+                <input type="text" id="nivel_dinamico" name="nivel_dinamico" required>
+                <br>
+                <label for="nivel_fijacion">Nivel del Pozo al momento fijar ancla (mts):</label>
+                <input type="text" id="nivel_fijacion" name="nivel_fijacion" required>
+                <br>
+                <label for="temp_fluido">T° Fluido en BDP (°C):</label>
+                <input type="text" id="temp_fluido" name="temp_fluido" required>
+                <br>
+                <label for="gradiente_fluido">Gradiente Fluido (psi/pie):</label>
+                <input type="text" id="gradiente_fluido" name="gradiente_fluido" required>
+                <br>
+            </fieldset>
+            <fieldset class="results">
+                <legend>Resultados</legend>
+                <label for="tension_fijacion">TENSIÓN FIJACIÓN (LIBRAS):</label>
+                <input type="text" id="tension_fijacion" name="tension_fijacion" readonly value="{{ tension_fijacion }}">
+                <br>
+                <label for="longitud_estiramiento">LONGITUD ESTIRAMIENTO (PLG):</label>
+                <input type="text" id="longitud_estiramiento" name="longitud_estiramiento" readonly value="{{ longitud_estiramiento }}">
+            </fieldset>
+            <button type="submit">Calcular</button>
+            <button type="button" onclick="window.location.href='/'">Back to menu</button>
+        </form>
+        {% if error %}
+            <p style="color: red;">{{ error }}</p>
+        {% endif %}
+    </div>
+</body>
+</html>
